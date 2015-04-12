@@ -10,12 +10,12 @@ Parser::Parser()
     token_type = NOTHING;
 }
 
-char* Parser::parse(const char new_expr[])
+char* Parser::parse(const char newExpr[])
 {
     try {
-        if ((int)strlen(new_expr) > EXPR_LEN_MAX)
+        if ((int)strlen(newExpr) > EXPR_LEN_MAX)
             throw Error(getRow(), getCol(), 200);
-        strncpy(expr, new_expr, EXPR_LEN_MAX - 1);
+        strncpy(expr, newExpr, EXPR_LEN_MAX - 1);
         e = expr;
         answer = 0;
         tokenize();
