@@ -19,8 +19,9 @@ char* Parser::parse(const char newExpr[])
         e = expr;
         answer = 0;
         tokenize();
-        if (token_type == DELIMETER && *token == '\0')
+        if (token_type == DELIMETER && *token == '\0'){
             throw Error(getRow(), getCol(), 4);
+        }
         answer = parseAssign();
         // check for garbage at the end of the expression
         // an expression ends with a character '\0' and token_type = delimeter
@@ -43,21 +44,25 @@ char* Parser::parse(const char newExpr[])
 
 bool isDelimeter(const char c)
 {
+    if (c == 0) return 0;
     return strchr("&|<>=+/*%^!", c) != 0;
 }
 
 bool isAlpha(const char c)
 {
+    if (c == 0) return 0;
     return strchr("ABCDEFGHIJKLMNOPQRSTUVWXYZ_", toupper(c)) != 0;
 }
 
 bool isDigitDot(const char c)
 {
+    if (c == 0) return 0;
     return strchr("0123456789.", c) != 0;
 }
 
 bool isDigit(const char c)
 {
+    if (c == 0) return 0;
     return strchr("0123456789", c) != 0;
 }
 
@@ -157,6 +162,7 @@ double Parser::parseAssign()
         TOKENTYPE tokenTypeNew = token_type;
         char tokenNew[NAME_LEN_MAX+1];
         strcpy(tokenNew, token);
+
         tokenize();
         if (strcmp(token, "=") == 0){  // assignment
             tokenize();
@@ -272,6 +278,7 @@ double Parser::parseNeg()
     }
 }
 
+/// functions
 double Parser::parseFunc()
 {
     //printf("Test 9\n");
@@ -306,7 +313,7 @@ double Parser::parseParen()
 double Parser::parseNumber()
 {
     //printf("Test 11\n");
-    double ans = 0.0;
+    double ans = 0;
     if (token_type == NUMBER){
         ans = strtod(token, NULL);
         tokenize();
