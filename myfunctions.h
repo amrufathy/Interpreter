@@ -2,7 +2,6 @@
 #define FUNCTIONS_H
 
 #include "error.h"
-#include "constants.h"
 #include <cctype>
 
 using namespace std;

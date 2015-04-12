@@ -1,10 +1,7 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-// declarations
-#include <cstdio>
 #include <cstdlib>
-#include <cstring>
 #include <cctype>
 #include <cmath>
 
@@ -22,9 +19,7 @@ class Parser
         char* parse(const char expr[]);
 
     private:
-
         enum TOKENTYPE {NOTHING = -1, DELIMETER, NUMBER, VARIABLE, FUNCTION, UNKNOWN};
-
         enum OPERATOR_ID {AND, OR, BITSHIFTLEFT, BITSHIFTRIGHT, EQUAL, UNEQUAL, SMALLER, LARGER,
                           SMALLEREQ, LARGEREQ, PLUS, MINUS, MULTIPLY, DIVIDE, MODULUS, XOR,
                           POW, FACTORIAL};
@@ -34,13 +29,12 @@ class Parser
         char* e;
         char token[NAME_LEN_MAX+1];
         TOKENTYPE token_type;
-        double ans;
-        char ans_str[255];
+        double answer;
+        char answer_str[255];
         Variables user_var;
 
     private:
         void tokenize();
-
         double parseAssign();
         double parseBitshift();
         double parseCond();
@@ -52,12 +46,10 @@ class Parser
         double parseFunc();
         double parseParen();
         double parseNumber();
-
         int getOpID(const char op_name[]);
         double evalOp(const int op_id, const double &lhs, const double &rhs);
         double evalFunc(const char fn_name[], const double &value);
         double evalVar(const char var_name[]);
-
         int getRow();
         int getCol();
 };

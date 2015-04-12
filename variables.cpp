@@ -16,7 +16,6 @@ bool Variables::add(const char* name, double value)
     return true;
 }
 
-
 /// Get value of variable with known name
 bool Variables::getValue(const char* name, double* value)
 {
@@ -31,7 +30,7 @@ bool Variables::getValue(const char* name, double* value)
 /**
  * Returns the index of the given name in the variable list.
  * Returns -1 if name is not present in the list.
- * Name is case insensitive.
+ * Name is case sensitive.
  */
 int Variables::getIndex(const char* name)
 {

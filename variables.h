@@ -1,13 +1,10 @@
-#ifndef USER_VARIABLES_H
-#define USER_VARIABLES_H
+#ifndef VARIABLES_H
+#define VARIABLES_H
 
-#include <cstdio>
-#include <cctype>
-#include <cstring>
 #include <vector>
-
-#include "constants.h"
+#include <cstring>
 #include "myfunctions.h"
+#include "constants.h"
 
 using namespace std;
 

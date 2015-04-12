@@ -3,10 +3,8 @@
 
 #include <cstdio>
 #include <cstdarg>
-#include <cstring>
 
 using namespace std;
-
 
 class Error {
     public:
@@ -18,8 +16,8 @@ class Error {
         char* get_msg() {return msg;}   // Returns a pointer to the error msg
 
     private:
-        int err_row;    // row where the error occured
-        int err_col;    // column (position) where the error occured
+        int err_row;    // row where the error occurred
+        int err_col;    // column (position) where the error occurred
         int err_id;     // id of the error
         char msg[255];
 

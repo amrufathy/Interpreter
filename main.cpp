@@ -11,14 +11,12 @@ int main()
 
     Parser prs; // object of class parser
 
-    printf("Enter an expression an press Enter to calculate the result.\n");
-    puts("Enter an empty expression to quit.\n\n");
+    //printf("Enter an expression an press Enter to calculate the result.\n");
+    //printf("Enter an empty expression to quit.\n\n");
 
     do{
         printf("> ");
-        //fflush(stdin);
         gets(expr);
-        //fflush(stdout);
 
         if (strcmp(expr, "")){
             try{    // parse
