@@ -181,7 +181,7 @@ double Parser::parseAssign()
     return parseBitshift();
 }
 
-/// conditional operators and bitshift
+/// bitwise operators and bitshift
 double Parser::parseBitshift()
 {
     //printf("Test 2\n");
@@ -278,7 +278,6 @@ double Parser::parseNeg()
     }
 }
 
-/// functions
 double Parser::parseFunc()
 {
     //printf("Test 9\n");
@@ -415,6 +414,7 @@ double Parser::evalVar(const char var_name[])
     strtolower(varNameL, var_name);
     if (!strcmp(varNameL,"e"))  return 2.7182818284590452353602874713527;
     if (!strcmp(varNameL,"pi")) return 3.1415926535897932384626433832795;
+    if (!strcmp(varNameL,"bibo")) return 98105098111013010;
     double ans;
     if (user_var.getValue(var_name, &ans))
         return ans;
