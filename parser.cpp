@@ -164,9 +164,18 @@ double Parser::parseAssign()
         strcpy(tokenNew, token);
 
         tokenize();
-        if (strcmp(token, "=") == 0){  // assignment
+        if (!strcmp(token, "=")){  // assignment
             tokenize();
             double ans = parseBitshift();
+            if (user_var.add(tokenNew, ans) == false){
+                throw Error(getRow(), getCol(), 300);
+            }
+            return ans;
+        }
+        else if (!strcmp(token,"++")){
+            tokenize();
+            double ans = evalVar(tokenNew);
+            ans++;
             if (user_var.add(tokenNew, ans) == false){
                 throw Error(getRow(), getCol(), 300);
             }
@@ -215,7 +224,7 @@ double Parser::parseOp1()
     //printf("Test 4\n");
     double ans = parseOp2();
     int Op = getOpID(token);
-    while (Op == PLUS || Op == MINUS){
+    while (Op == PLUS || Op == MINUS || Op == PLUSPLUS){
         tokenize();
         ans = evalOp(Op, ans, parseOp2());
         Op = getOpID(token);
@@ -343,6 +352,7 @@ int Parser::getOpID(const char op_name[])
     if (!strcmp(op_name,"<="))  return SMALLEREQ;
     if (!strcmp(op_name,">="))  return LARGEREQ;
     if (!strcmp(op_name,"+"))   return PLUS;
+    if (!strcmp(op_name,"++"))  return PLUSPLUS;
     if (!strcmp(op_name,"-"))   return MINUS;
     if (!strcmp(op_name,"*"))   return MULTIPLY;
     if (!strcmp(op_name,"/"))   return DIVIDE;
@@ -368,6 +378,7 @@ double Parser::evalOp(const int op_id, const double &lhs, const double &rhs)
         case SMALLEREQ:     return lhs <= rhs;
         case LARGEREQ:      return lhs >= rhs;
         case PLUS:          return lhs + rhs;
+        case PLUSPLUS:      return lhs + 1;
         case MINUS:         return lhs - rhs;
         case MULTIPLY:      return lhs * rhs;
         case DIVIDE:        return lhs / rhs;
@@ -412,9 +423,11 @@ double Parser::evalVar(const char var_name[])
 {
     char varNameL[NAME_LEN_MAX+1];
     strtolower(varNameL, var_name);
+    if (!strcmp(varNameL,"exit")) {exit(0); return 0;}
     if (!strcmp(varNameL,"e"))  return 2.7182818284590452353602874713527;
     if (!strcmp(varNameL,"pi")) return 3.1415926535897932384626433832795;
     if (!strcmp(varNameL,"bibo")) return 98105098111013010;
+    if (!strcmp(varNameL,"mode")) {modes.moder(); return 0;}
     double ans;
     if (user_var.getValue(var_name, &ans))
         return ans;
