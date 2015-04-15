@@ -1,6 +1,6 @@
 #include <cstdlib>
 #include <cstdio>
-
+#include <iostream>
 #include "parser.h"
 
 using namespace std;
@@ -15,7 +15,8 @@ int main()
     //printf("Enter an empty expression to quit.\n\n");
 
     do{
-        printf("> ");
+            //cout<<"Mohamed"<<endl;
+        printf(">> ");
         gets(expr);
 
         if (strcmp(expr, "")){
@@ -28,7 +29,7 @@ int main()
                 printf("\tError: Unknown error occurred in parser\n");
             }
         }
-    } while (strcmp(expr, ""));
+    } while (strcmp(expr, "exit"));
 
     return EXIT_SUCCESS;
 }

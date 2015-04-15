@@ -32,6 +32,8 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="Modes.cpp" />
+		<Unit filename="Modes.h" />
 		<Unit filename="constants.h" />
 		<Unit filename="error.cpp" />
 		<Unit filename="error.h" />

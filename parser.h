@@ -9,6 +9,7 @@
 #include "error.h"
 #include "myfunctions.h"
 #include "variables.h"
+#include "Modes.h"
 
 using namespace std;
 
@@ -21,7 +22,7 @@ class Parser
     private:
         enum TOKENTYPE {NOTHING = -1, DELIMETER, NUMBER, VARIABLE, FUNCTION, UNKNOWN};
         enum OPERATOR_ID {AND, OR, BITSHIFTLEFT, BITSHIFTRIGHT, EQUAL, UNEQUAL, SMALLER, LARGER,
-                          SMALLEREQ, LARGEREQ, PLUS, MINUS, MULTIPLY, DIVIDE, MODULUS, XOR,
+                          SMALLEREQ, LARGEREQ, PLUS, PLUSPLUS, MINUS, MULTIPLY, DIVIDE, MODULUS, XOR,
                           POW, FACTORIAL};
 
     private:
@@ -32,6 +33,7 @@ class Parser
         double answer;
         char answer_str[255];
         Variables user_var;
+        Modes modes;
 
     private:
         void tokenize();
