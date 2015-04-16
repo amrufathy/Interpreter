@@ -5,9 +5,10 @@ using namespace std;
 Parser::Parser()
 {
     expr[0] = '\0';
-    e = NULL;
     token[0] = '\0';
-    token_type = NOTHING;
+    tokenNew[0] = '\0';
+    e = NULL;
+    tokenType = NOTHING;
 }
 
 char* Parser::parse(const char newExpr[])
@@ -19,14 +20,13 @@ char* Parser::parse(const char newExpr[])
         e = expr;
         answer = 0;
         tokenize();
-        if (token_type == DELIMETER && *token == '\0'){
+        if (tokenType == DELIMETER && *token == '\0')
             throw Error(getRow(), getCol(), 4);
-        }
         answer = parseAssign();
         // check for garbage at the end of the expression
-        // an expression ends with a character '\0' and token_type = delimeter
-        if (token_type != DELIMETER || *token != '\0'){
-            if (token_type == DELIMETER)
+        // an expression ends with a character '\0' and tokenType = delimeter
+        if (tokenType != DELIMETER || *token != '\0'){
+            if (tokenType == DELIMETER)
                 throw Error(getRow(), getCol(), 101, token);    // user entered a not existing operator like "//"
             else
                 throw Error(getRow(), getCol(), 5, token);
@@ -68,25 +68,28 @@ bool isDigit(const char c)
 
 /**
  * Get next token in the current string expr.
- * Uses the Parser data expr, e, token, t, token_type and err
+ * Uses the Parser data expr, e, token, t, tokenType and err
  */
 void Parser::tokenize()
 {
-    token_type = NOTHING;
+    tokenType = NOTHING;
     char* tok;
     tok = token;         // let tok point to the first character in token
+
+    strncpy(tokenNew, token, NAME_LEN_MAX-1);
+
     *tok = '\0';
 
     while (*e == ' ' || *e == '\t')     // skip space or tab
         e++;
 
     if (*e == '\0'){    // end of expression
-        token_type = DELIMETER;
+        tokenType = DELIMETER;
         return;
     }
 
     if (*e == '-'){     // check for minus
-        token_type = DELIMETER;
+        tokenType = DELIMETER;
         *tok = *e;
         e++; tok++;
         *tok = '\0';
@@ -94,7 +97,7 @@ void Parser::tokenize()
     }
 
     if (*e == '(' || *e == ')'){    // check for parentheses
-        token_type = DELIMETER;
+        tokenType = DELIMETER;
         *tok = *e;
         e++; tok++;
         *tok = '\0';
@@ -102,7 +105,7 @@ void Parser::tokenize()
     }
 
     if (isDelimeter(*e)){   // check for operators / delimeters
-        token_type = DELIMETER;
+        tokenType = DELIMETER;
         while (isDelimeter(*e)){
             *tok = *e;
             e++; tok++;
@@ -112,7 +115,7 @@ void Parser::tokenize()
     }
 
     if (isDigitDot(*e)){    // check for a value
-        token_type = NUMBER;
+        tokenType = NUMBER;
         while (isDigitDot(*e)){
             *tok = *e;
             e++; tok++;
@@ -135,14 +138,14 @@ void Parser::tokenize()
             e2++;
 
         if (*e2 == '(')
-            token_type = FUNCTION;
+            tokenType = FUNCTION;
         else
-            token_type = VARIABLE;
+            tokenType = VARIABLE;
 
         return;
     }
     // syntax error
-    token_type = UNKNOWN;
+    tokenType = UNKNOWN;
     while (*e != '\0'){
         *tok = *e;
         e++; tok++;
@@ -157,34 +160,24 @@ void Parser::tokenize()
 double Parser::parseAssign()
 {
     //printf("Test 1\n");
-    if (token_type == VARIABLE){
-        char* eNew = e;
-        TOKENTYPE tokenTypeNew = token_type;
-        char tokenNew[NAME_LEN_MAX+1];
-        strcpy(tokenNew, token);
-
+    if (tokenType == VARIABLE){
+        char *eVar = e;
+        TOKENTYPE tokenTypeVar = tokenType;
+        char tokenVar[NAME_LEN_MAX+1];
+        strcpy(tokenVar, token);
         tokenize();
         if (!strcmp(token, "=")){  // assignment
             tokenize();
             double ans = parseBitshift();
-            if (user_var.add(tokenNew, ans) == false){
-                throw Error(getRow(), getCol(), 300);
-            }
-            return ans;
-        }
-        else if (!strcmp(token,"++")){
-            tokenize();
-            double ans = evalVar(tokenNew);
-            ans++;
-            if (user_var.add(tokenNew, ans) == false){
+            if (user_var.add(tokenVar, ans) == false){
                 throw Error(getRow(), getCol(), 300);
             }
             return ans;
         }
         else{ // go back to previous token
-            e = eNew;
-            token_type = tokenTypeNew;
-            strcpy(token, tokenNew);
+            e = eVar;
+            tokenType = tokenTypeVar;
+            strcpy(token, tokenVar);
         }
     }
     return parseBitshift();
@@ -224,7 +217,7 @@ double Parser::parseOp1()
     //printf("Test 4\n");
     double ans = parseOp2();
     int Op = getOpID(token);
-    while (Op == PLUS || Op == MINUS || Op == PLUSPLUS){
+    while (Op == PLUS || Op == MINUS){
         tokenize();
         ans = evalOp(Op, ans, parseOp2());
         Op = getOpID(token);
@@ -290,26 +283,44 @@ double Parser::parseNeg()
 double Parser::parseFunc()
 {
     //printf("Test 9\n");
-    if (token_type == FUNCTION){
+    if (tokenType == FUNCTION){
         char fName[NAME_LEN_MAX+1];
         strcpy(fName, token);
         tokenize();
-        return evalFunc(fName, parseParen());
+        return evalFunc(fName, parseIncrement());
     }
     else{
-        return parseParen();
+        return parseIncrement();
     }
+}
+
+double Parser::parseIncrement()
+{
+    //printf("Test 10\n");
+    double ans = parseParen();
+    int Op = getOpID(token);
+    if (Op == PLUSPLUS){
+        char varName[NAME_LEN_MAX+1];
+        strncpy(varName, tokenNew, NAME_LEN_MAX-1);
+        tokenize();
+        if (user_var.getValue(varName, &ans))
+            ans = evalOp(Op, ans, 0.0);
+        if (user_var.add(varName, ans))
+            return ans;
+    }
+    else return ans;
+
 }
 
 /// parenthesized expression or value
 double Parser::parseParen()
 {
-    //printf("Test 10\n");
-    if (token_type == DELIMETER){   // parenthesized expression
+    //printf("Test 11\n");
+    if (tokenType == DELIMETER){   // parenthesized expression
         if (token[0] == '(' && token[1] == '\0'){
             tokenize();
             double ans = parseBitshift();
-            if (token_type != DELIMETER || token[0] != ')' || token[1] || '\0')
+            if (tokenType != DELIMETER || token[0] != ')' || token[1] || '\0')
                 throw Error(getRow(), getCol(), 3);
             tokenize();
             return ans;
@@ -320,13 +331,13 @@ double Parser::parseParen()
 
 double Parser::parseNumber()
 {
-    //printf("Test 11\n");
+    //printf("Test 12\n");
     double ans = 0;
-    if (token_type == NUMBER){
+    if (tokenType == NUMBER){
         ans = strtod(token, NULL);
         tokenize();
     }
-    else if (token_type == VARIABLE){
+    else if (tokenType == VARIABLE){
         ans = evalVar(token);
         tokenize();
     }

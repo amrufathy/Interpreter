@@ -27,9 +27,9 @@ class Parser
 
     private:
         char expr[EXPR_LEN_MAX+1];
-        char* e;
-        char token[NAME_LEN_MAX+1];
-        TOKENTYPE token_type;
+        char *e;
+        char token[NAME_LEN_MAX+1], tokenNew[NAME_LEN_MAX+1];
+        TOKENTYPE tokenType;
         double answer;
         char answer_str[255];
         Variables user_var;
@@ -46,6 +46,7 @@ class Parser
         double parseFact();
         double parseNeg();
         double parseFunc();
+        double parseIncrement();
         double parseParen();
         double parseNumber();
         int getOpID(const char op_name[]);
