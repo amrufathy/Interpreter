@@ -72,12 +72,11 @@ bool isDigit(const char c)
  */
 void Parser::tokenize()
 {
+    strncpy(tokenNew, token, NAME_LEN_MAX-1);
+
     tokenType = NOTHING;
     char* tok;
     tok = token;         // let tok point to the first character in token
-
-    strncpy(tokenNew, token, NAME_LEN_MAX-1);
-
     *tok = '\0';
 
     while (*e == ' ' || *e == '\t')     // skip space or tab
@@ -92,6 +91,10 @@ void Parser::tokenize()
         tokenType = DELIMETER;
         *tok = *e;
         e++; tok++;
+        if (*e == '-'){
+            *tok = *e;
+            e++; tok++;
+        }
         *tok = '\0';
         return;
     }
@@ -159,7 +162,7 @@ void Parser::tokenize()
 /// assignment of variable or function
 double Parser::parseAssign()
 {
-    //printf("Test 1\n");
+    //printf("Level 1\n");
     if (tokenType == VARIABLE){
         char *eVar = e;
         TOKENTYPE tokenTypeVar = tokenType;
@@ -186,7 +189,7 @@ double Parser::parseAssign()
 /// bitwise operators and bitshift
 double Parser::parseBitshift()
 {
-    //printf("Test 2\n");
+    //printf("Level 2\n");
     double ans = parseCond();
     int Op = getOpID(token);
     while (Op == AND || Op == OR || Op == BITSHIFTLEFT || Op == BITSHIFTRIGHT){
@@ -200,7 +203,7 @@ double Parser::parseBitshift()
 /// conditional operators
 double Parser::parseCond()
 {
-    //printf("Test 3\n");
+    //printf("Level 3\n");
     double ans = parseOp1();
     int Op = getOpID(token);
     while (Op == EQUAL || Op == UNEQUAL || Op == SMALLER || Op == LARGER || Op == SMALLEREQ || Op == LARGEREQ){
@@ -214,7 +217,7 @@ double Parser::parseCond()
 /// add or subtract
 double Parser::parseOp1()
 {
-    //printf("Test 4\n");
+    //printf("Level 4\n");
     double ans = parseOp2();
     int Op = getOpID(token);
     while (Op == PLUS || Op == MINUS){
@@ -228,7 +231,7 @@ double Parser::parseOp1()
 /// multiply, divide, modulus, xor
 double Parser::parseOp2()
 {
-    //printf("Test 5\n");
+    //printf("Level 5\n");
     double ans = parsePower();
     int Op = getOpID(token);
     while (Op == MULTIPLY || Op == DIVIDE || Op == MODULUS || Op == XOR){
@@ -241,7 +244,7 @@ double Parser::parseOp2()
 
 double Parser::parsePower()
 {
-    //printf("Test 6\n");
+    //printf("Level 6\n");
     double ans = parseFact();
     int Op = getOpID(token);
     while (Op == POW){
@@ -254,7 +257,7 @@ double Parser::parsePower()
 
 double Parser::parseFact()
 {
-    //printf("Test 7\n");
+    //printf("Level 7\n");
     double ans = parseNeg();
     int Op = getOpID(token);
     while (Op == FACTORIAL){
@@ -268,7 +271,7 @@ double Parser::parseFact()
 /// unary minus
 double Parser::parseNeg()
 {
-    //printf("Test 8\n");
+    //printf("Level 8\n");
     int Op = getOpID(token);
     if (Op == MINUS){
         tokenize();
@@ -282,7 +285,7 @@ double Parser::parseNeg()
 
 double Parser::parseFunc()
 {
-    //printf("Test 9\n");
+    //printf("Level 9\n");
     if (tokenType == FUNCTION){
         char fName[NAME_LEN_MAX+1];
         strcpy(fName, token);
@@ -296,10 +299,10 @@ double Parser::parseFunc()
 
 double Parser::parseIncrement()
 {
-    //printf("Test 10\n");
+    //printf("Level 10\n");
     double ans = parseParen();
     int Op = getOpID(token);
-    if (Op == PLUSPLUS){
+    if (Op == PLUSPLUS || Op == MINUSMINUS){
         char varName[NAME_LEN_MAX+1];
         strncpy(varName, tokenNew, NAME_LEN_MAX-1);
         tokenize();
@@ -308,14 +311,13 @@ double Parser::parseIncrement()
         if (user_var.add(varName, ans))
             return ans;
     }
-    else return ans;
-
+    return ans;
 }
 
 /// parenthesized expression or value
 double Parser::parseParen()
 {
-    //printf("Test 11\n");
+    //printf("Level 11\n");
     if (tokenType == DELIMETER){   // parenthesized expression
         if (token[0] == '(' && token[1] == '\0'){
             tokenize();
@@ -331,7 +333,7 @@ double Parser::parseParen()
 
 double Parser::parseNumber()
 {
-    //printf("Test 12\n");
+    //printf("Level 12\n");
     double ans = 0;
     if (tokenType == NUMBER){
         ans = strtod(token, NULL);
@@ -340,6 +342,14 @@ double Parser::parseNumber()
     else if (tokenType == VARIABLE){
         ans = evalVar(token);
         tokenize();
+    }
+    else if (getOpID(token) == MINUSMINUS){
+        while (getOpID(token) == MINUSMINUS)
+            tokenize();
+        if (tokenType == NUMBER){
+            ans = strtod(token, NULL);
+            tokenize();
+        }
     }
     else{
         if (token[0] == '\0')
@@ -350,27 +360,28 @@ double Parser::parseNumber()
     return ans;
 }
 
-int Parser::getOpID(const char op_name[])
+int Parser::getOpID(const char opName[])
 {
-    if (!strcmp(op_name,"&"))   return AND;
-    if (!strcmp(op_name,"|"))   return OR;
-    if (!strcmp(op_name,"<<"))  return BITSHIFTLEFT;
-    if (!strcmp(op_name,">>"))  return BITSHIFTRIGHT;
-    if (!strcmp(op_name,"=="))  return EQUAL;
-    if (!strcmp(op_name,"<>"))  return UNEQUAL;
-    if (!strcmp(op_name,"<"))   return SMALLER;
-    if (!strcmp(op_name,">"))   return LARGER;
-    if (!strcmp(op_name,"<="))  return SMALLEREQ;
-    if (!strcmp(op_name,">="))  return LARGEREQ;
-    if (!strcmp(op_name,"+"))   return PLUS;
-    if (!strcmp(op_name,"++"))  return PLUSPLUS;
-    if (!strcmp(op_name,"-"))   return MINUS;
-    if (!strcmp(op_name,"*"))   return MULTIPLY;
-    if (!strcmp(op_name,"/"))   return DIVIDE;
-    if (!strcmp(op_name,"%"))   return MODULUS;
-    if (!strcmp(op_name,"||"))  return XOR;
-    if (!strcmp(op_name,"^"))   return POW;
-    if (!strcmp(op_name,"!"))   return FACTORIAL;
+    if (!strcmp(opName,"&"))   return AND;
+    if (!strcmp(opName,"|"))   return OR;
+    if (!strcmp(opName,"<<"))  return BITSHIFTLEFT;
+    if (!strcmp(opName,">>"))  return BITSHIFTRIGHT;
+    if (!strcmp(opName,"=="))  return EQUAL;
+    if (!strcmp(opName,"<>"))  return UNEQUAL;
+    if (!strcmp(opName,"<"))   return SMALLER;
+    if (!strcmp(opName,">"))   return LARGER;
+    if (!strcmp(opName,"<="))  return SMALLEREQ;
+    if (!strcmp(opName,">="))  return LARGEREQ;
+    if (!strcmp(opName,"+"))   return PLUS;
+    if (!strcmp(opName,"++"))  return PLUSPLUS;
+    if (!strcmp(opName,"-"))   return MINUS;
+    if (!strcmp(opName,"--"))  return MINUSMINUS;
+    if (!strcmp(opName,"*"))   return MULTIPLY;
+    if (!strcmp(opName,"/"))   return DIVIDE;
+    if (!strcmp(opName,"%"))   return MODULUS;
+    if (!strcmp(opName,"||"))  return XOR;
+    if (!strcmp(opName,"^"))   return POW;
+    if (!strcmp(opName,"!"))   return FACTORIAL;
 
     return -1;
 }
@@ -391,6 +402,7 @@ double Parser::evalOp(const int op_id, const double &lhs, const double &rhs)
         case PLUS:          return lhs + rhs;
         case PLUSPLUS:      return lhs + 1;
         case MINUS:         return lhs - rhs;
+        case MINUSMINUS:    return lhs - 1;
         case MULTIPLY:      return lhs * rhs;
         case DIVIDE:        return lhs / rhs;
         case MODULUS:       return int(lhs) % int(rhs);
