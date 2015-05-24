@@ -9,6 +9,7 @@
 #include "error.h"
 #include "myfunctions.h"
 #include "variables.h"
+#include "Function.h"
 #include "Modes.h"
 
 using namespace std;
@@ -29,10 +30,11 @@ class Parser
         char expr[EXPR_LEN_MAX+1];
         char *e;
         char token[NAME_LEN_MAX+1], tokenNew[NAME_LEN_MAX+1];
-        TOKENTYPE tokenType;
+        TOKENTYPE tokenType, tokenTypeNew;
         double answer;
         char answer_str[255];
         Variables user_var;
+        Function user_func;
         Modes modes;
 
     private:

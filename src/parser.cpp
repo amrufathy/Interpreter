@@ -2,6 +2,9 @@
 
 using namespace std;
 
+bool flag = false;
+bool closedParen = false;
+
 Parser::Parser()
 {
     expr[0] = '\0';
@@ -9,6 +12,7 @@ Parser::Parser()
     tokenNew[0] = '\0';
     e = NULL;
     tokenType = NOTHING;
+    tokenTypeNew = NOTHING;
 }
 
 char* Parser::parse(const char newExpr[])
@@ -28,43 +32,52 @@ char* Parser::parse(const char newExpr[])
         if (tokenType != DELIMETER || *token != '\0'){
             if (tokenType == DELIMETER)
                 throw Error(getRow(), getCol(), 101, token);    // user entered a not existing operator like "//"
-            else
-                throw Error(getRow(), getCol(), 5, token);
+            //else
+                //throw Error(getRow(), getCol(), 5, token);
         }
         snprintf(answer_str, sizeof(answer_str), "Ans = %g", answer);
     }
     catch (Error err){
         if (err.get_row() == -1)
-            snprintf(answer_str, sizeof(answer_str), "Error: %s (col %i)", err.get_msg(), err.get_col());
+            snprintf(answer_str, sizeof(answer_str), "Error: %s (col %d)", err.get_msg(), err.get_col());
         else
-            snprintf(answer_str, sizeof(answer_str), "Error: %s (ln %i, col %i)", err.get_msg(), err.get_row(), err.get_col());
+            snprintf(answer_str, sizeof(answer_str), "Error: %s (ln %d, col %d)", err.get_msg(), err.get_row(), err.get_col());
     }
     return answer_str;
 }
 
 bool isDelimeter(const char c)
 {
-    if (c == 0) return 0;
+    if (!c) return 0;
     return strchr("&|<>=+/*%^!", c) != 0;
 }
 
 bool isAlpha(const char c)
 {
-    if (c == 0) return 0;
+    if (!c) return 0;
     return strchr("ABCDEFGHIJKLMNOPQRSTUVWXYZ_", toupper(c)) != 0;
 }
 
 bool isDigitDot(const char c)
 {
-    if (c == 0) return 0;
+    if (!c) return 0;
     return strchr("0123456789.", c) != 0;
 }
 
 bool isDigit(const char c)
 {
-    if (c == 0) return 0;
+    if (!c) return 0;
     return strchr("0123456789", c) != 0;
 }
+
+bool isParam(const char c)
+{
+    if (!c) return 0;
+    return isAlpha(c) || c == ',' || isDigitDot(c);
+}
+
+
+bool isPreDefinedFunction(const char fn_name[]);
 
 /**
  * Get next token in the current string expr.
@@ -73,7 +86,7 @@ bool isDigit(const char c)
 void Parser::tokenize()
 {
     strncpy(tokenNew, token, NAME_LEN_MAX-1);
-
+    tokenTypeNew = tokenType;
     tokenType = NOTHING;
     char* tok;
     tok = token;         // let tok point to the first character in token
@@ -91,10 +104,6 @@ void Parser::tokenize()
         tokenType = DELIMETER;
         *tok = *e;
         e++; tok++;
-        if (*e == '-'){
-            *tok = *e;
-            e++; tok++;
-        }
         *tok = '\0';
         return;
     }
@@ -140,8 +149,33 @@ void Parser::tokenize()
         while (*e2 == ' ' || *e2 == '\t')     // skip space or tab
             e2++;
 
-        if (*e2 == '(')
+        if (*e2 == '('){
             tokenType = FUNCTION;
+            e2++;
+            if(isParam(*e2) && flag){
+                closedParen = false;
+                *tok = '(';tok++;
+                while((isParam(*e2) || *e2=='(' || *e2==')' || isDelimeter(*e2)) && flag){
+                    *tok = *e2;
+                    tok++; e2++;
+                    while(*e2 == ' ' || *e2 == '\t')
+                        e2++;
+                    if (isDigit(*e2) && *(e2+1) ==')') {
+                        *tok=*e2;
+                        tok++;e2++;
+                        *tok=*e2;
+                        tok++;*tok='\0';
+                        e=e2;
+                        if (*e2 != ')') throw Error(getRow(), getCol(), 3);
+                        return;
+                    }
+                    if (*e2 == ')') {closedParen = true; e=e2;}
+                }
+                *tok = '\0';
+                if (!closedParen) throw Error(getRow(), getCol(), 3);
+                e=e2;
+            }
+        }
         else
             tokenType = VARIABLE;
 
@@ -172,7 +206,7 @@ double Parser::parseAssign()
         if (!strcmp(token, "=")){  // assignment
             tokenize();
             double ans = parseBitshift();
-            if (user_var.add(tokenVar, ans) == false){
+            if (!user_var.add(tokenVar, ans)){
                 throw Error(getRow(), getCol(), 300);
             }
             return ans;
@@ -183,6 +217,7 @@ double Parser::parseAssign()
             strcpy(token, tokenVar);
         }
     }
+    //printf("Returning Level 1\n");
     return parseBitshift();
 }
 
@@ -197,6 +232,7 @@ double Parser::parseBitshift()
         ans = evalOp(Op, ans, parseCond());
         Op = getOpID(token);
     }
+    //printf("Returning Level 2\n");
     return ans;
 }
 
@@ -211,6 +247,7 @@ double Parser::parseCond()
         ans = evalOp(Op, ans, parseOp1());
         Op = getOpID(token);
     }
+    //printf("Returning Level 3\n");
     return ans;
 }
 
@@ -225,6 +262,7 @@ double Parser::parseOp1()
         ans = evalOp(Op, ans, parseOp2());
         Op = getOpID(token);
     }
+    //printf("Returning Level 4\n");
     return ans;
 }
 
@@ -239,6 +277,7 @@ double Parser::parseOp2()
         ans = evalOp(Op, ans, parsePower());
         Op = getOpID(token);
     }
+    //printf("Returning Level 5\n");
     return ans;
 }
 
@@ -252,6 +291,7 @@ double Parser::parsePower()
         ans = evalOp(Op, ans, parseFact());
         Op = getOpID(token);
     }
+    //printf("Returning Level 6\n");
     return ans;
 }
 
@@ -265,6 +305,7 @@ double Parser::parseFact()
         ans = evalOp(Op, ans, 0.0); // RHS = 0
         Op = getOpID(token);
     }
+    //printf("Returning Level 7\n");
     return ans;
 }
 
@@ -272,29 +313,144 @@ double Parser::parseFact()
 double Parser::parseNeg()
 {
     //printf("Level 8\n");
+    double ans;
     int Op = getOpID(token);
     if (Op == MINUS){
         tokenize();
-        double ans = parseFunc();
-        return -ans;
+        ans = parseFunc();
+        ans = -ans;
     }
     else{
-        return parseFunc();
+        ans = parseFunc();
     }
+    //printf("Returning Level 8\n");
+    return ans;
 }
 
 double Parser::parseFunc()
 {
     //printf("Level 9\n");
+    double ans = 0;
+    //flag = false;
     if (tokenType == FUNCTION){
         char fName[NAME_LEN_MAX+1];
-        strcpy(fName, token);
-        tokenize();
-        return evalFunc(fName, parseIncrement());
+        char * parts = strtok(token,"(,)");
+        strcpy(fName,parts);
+        while(*e != '(')
+                e--;
+        if(isPreDefinedFunction(fName)){
+            flag = false;
+            //printf("Predefined Function, %s\n",fName);
+            tokenize();
+            if (!strcmp(fName,"print")){
+                tokenize();
+                char str[EXPR_LEN_MAX+1];
+                strcpy(str,token);
+                char* evaluated;
+                evaluated = parse(str);
+                if(evaluated[0] == 'A'){
+                    char* str = parse(evaluated);
+                    str = strtok(str,"="); str = strtok(NULL,"=");
+                    ans = strtod(str,NULL);
+                    //printf("\tAns = %g\n",ans);
+                }
+                else{
+                    printf("%s\n",str);
+                }
+
+                return ans;
+            }
+
+
+            if (!strcmp(fName,"if")){
+                char condition[EXPR_LEN_MAX+1];
+                condition[0] = '\0';
+                for(int i = 0; i < 3; i++){
+                    tokenize();
+                    strcat(condition,token);
+                }
+                if(condition[strlen(condition)-1] == '-'){
+                    tokenize();
+                    strcat(condition,token);
+                }
+                char* str = parse(condition); if(str[0] == 'E') throw Error(getRow(), getCol()+3, 104, condition);
+                str = strtok(str,"="); str = strtok(NULL,"=");
+                ans = strtod(str,NULL);
+
+                char expression[EXPR_LEN_MAX+1];
+                char else_expr[EXPR_LEN_MAX+1];
+
+                bool broke = false;
+
+                do{
+                    printf("   ");
+                    gets(expression);
+                    if(!strcmp(expression,"endif")) break;
+                    if(ans && strcmp(expression,"else")) parse(expression);
+                    if(!strcmp(expression,"else")){
+                        do{
+                            printf("   ");
+                            gets(else_expr);
+                            if(!strcmp(else_expr,"endif")) {broke = true; break;}
+                            if(!ans) parse(else_expr);
+                        } while (true);
+                    }
+                    if(broke) break;
+                } while (true);
+
+                broke = false;
+
+                return ans;
+            }
+            /// if predefined but not 'if'
+            ans = evalFunc(fName, parseIncrement());
+        }
+        else{ /// if not predefined
+            flag = true;
+            for(unsigned i = 0; i < strlen(token); i++)
+                e--;
+            tokenize();
+            //printf("Userdefined Function, %s\n",token);
+            char funcName[NAME_LEN_MAX+1];
+            int countParams = -1;
+            char * params[NAME_LEN_MAX+1];
+            char * funcExpr = NULL;
+            char * parts = strtok(token,"(,)");
+            strcpy(funcName,parts);
+            while(parts){
+                parts = strtok(NULL,"(,)");
+                params[++countParams] = parts;
+            }
+
+            if(params[countParams-1][0] == '='){
+                parts = strtok(params[countParams-1],"=");
+                funcExpr = parts;
+                countParams--;
+            }
+
+            flag = false;
+            if (user_func.exist(funcName)){
+                char evaluated[EXPR_LEN_MAX+1];
+                if (user_func.evalExpr(funcName, params, evaluated)){
+                    char * str = strpbrk(parse(evaluated),"0123456789"); /// finds numbers in string
+                    ans = strtod(str,NULL);
+                }
+            }
+            else{
+                if (!funcExpr) throw Error(getRow(), getCol(), 102, funcName);
+                if (!user_func.add(funcName,params,countParams,funcExpr))
+                    throw Error(getRow(), getCol(), 301);
+                ans = 1;
+            }
+
+            tokenize();
+        }
     }
     else{
-        return parseIncrement();
+        ans = parseIncrement();
     }
+    //printf("Returning Level 9\n");
+    return ans;
 }
 
 double Parser::parseIncrement()
@@ -302,15 +458,19 @@ double Parser::parseIncrement()
     //printf("Level 10\n");
     double ans = parseParen();
     int Op = getOpID(token);
-    if (Op == PLUSPLUS || Op == MINUSMINUS){
+    if (Op == PLUSPLUS){
         char varName[NAME_LEN_MAX+1];
         strncpy(varName, tokenNew, NAME_LEN_MAX-1);
+        TOKENTYPE varTokenType = tokenTypeNew;
         tokenize();
-        if (user_var.getValue(varName, &ans))
+        if (user_var.getValue(varName, &ans) && varTokenType != NUMBER)
             ans = evalOp(Op, ans, 0.0);
-        if (user_var.add(varName, ans))
+        else
+            ans = evalOp(Op, strtod(varName,NULL), 0.0);
+        if (user_var.add(varName, ans) && varTokenType != NUMBER)
             return ans;
     }
+    //printf("Returning Level 10\n");
     return ans;
 }
 
@@ -328,6 +488,7 @@ double Parser::parseParen()
             return ans;
         }
     }
+    //printf("Returning Level 11\n");
     return parseNumber();   // if not parenthesized then the expression is a value
 }
 
@@ -341,15 +502,20 @@ double Parser::parseNumber()
     }
     else if (tokenType == VARIABLE){
         ans = evalVar(token);
+        //printf("var is %s = %g\n",token,ans);
         tokenize();
     }
-    else if (getOpID(token) == MINUSMINUS){
-        while (getOpID(token) == MINUSMINUS)
+    else if (getOpID(token) == MINUS){
+        int c = 1;
+        while (getOpID(token) == MINUS){
             tokenize();
-        if (tokenType == NUMBER){
-            ans = strtod(token, NULL);
-            tokenize();
+            c++;
         }
+        if (tokenType == NUMBER && !(c%2))
+            ans = -strtod(token, NULL);
+        else if (tokenType == NUMBER && c%2)
+            ans = strtod(token, NULL);
+        tokenize();
     }
     else{
         if (token[0] == '\0')
@@ -357,6 +523,7 @@ double Parser::parseNumber()
             else
                 throw Error(getRow(), getCol(), 7);
     }
+    //printf("Returning Level 12\n");
     return ans;
 }
 
@@ -367,7 +534,7 @@ int Parser::getOpID(const char opName[])
     if (!strcmp(opName,"<<"))  return BITSHIFTLEFT;
     if (!strcmp(opName,">>"))  return BITSHIFTRIGHT;
     if (!strcmp(opName,"=="))  return EQUAL;
-    if (!strcmp(opName,"<>"))  return UNEQUAL;
+    if (!strcmp(opName,"!="))  return UNEQUAL;
     if (!strcmp(opName,"<"))   return SMALLER;
     if (!strcmp(opName,">"))   return LARGER;
     if (!strcmp(opName,"<="))  return SMALLEREQ;
@@ -415,28 +582,46 @@ double Parser::evalOp(const int op_id, const double &lhs, const double &rhs)
     return 0;
 }
 
+bool isPreDefinedFunction(const char fn_name[])
+{
+    char funcNameL[NAME_LEN_MAX+1];
+    strtolower(funcNameL, fn_name);
+    return (!strcmp(funcNameL,"abs"))
+        || (!strcmp(funcNameL,"exp"))
+        || (!strcmp(funcNameL,"sign"))
+        || (!strcmp(funcNameL,"sqrt"))
+        || (!strcmp(funcNameL,"log"))
+        || (!strcmp(funcNameL,"log10"))
+        || (!strcmp(funcNameL,"sin"))
+        || (!strcmp(funcNameL,"cos"))
+        || (!strcmp(funcNameL,"tan"))
+        || (!strcmp(funcNameL,"asin"))
+        || (!strcmp(funcNameL,"acos"))
+        || (!strcmp(funcNameL,"atan"))
+        || (!strcmp(funcNameL,"factorial"))
+        || (!strcmp(funcNameL,"if"))
+        || (!strcmp(funcNameL,"else"))
+        || (!strcmp(funcNameL,"print"));
+}
+
 double Parser::evalFunc(const char fn_name[], const double &value)
 {
-    try{
-        char funcNameL[NAME_LEN_MAX+1];
-        strtolower(funcNameL, fn_name);
-        if (!strcmp(funcNameL,"abs"))       return abs(value);
-        if (!strcmp(funcNameL,"exp"))       return exp(value);
-        if (!strcmp(funcNameL,"sign"))      return sign(value);
-        if (!strcmp(funcNameL,"sqrt"))      return sqrt(value);
-        if (!strcmp(funcNameL,"log"))       return log(value);
-        if (!strcmp(funcNameL,"log10"))     return log10(value);
-        if (!strcmp(funcNameL,"sin"))       return sin(value);
-        if (!strcmp(funcNameL,"cos"))       return cos(value);
-        if (!strcmp(funcNameL,"tan"))       return tan(value);
-        if (!strcmp(funcNameL,"asin"))      return asin(value);
-        if (!strcmp(funcNameL,"acos"))      return acos(value);
-        if (!strcmp(funcNameL,"atan"))      return atan(value);
-        if (!strcmp(funcNameL,"factorial")) return fact(value);
-    }
-    catch (Error err){
-        throw Error(getCol(), getRow(), 102, fn_name);
-    }
+    char funcNameL[NAME_LEN_MAX+1];
+    strtolower(funcNameL, fn_name);
+    if (!strcmp(funcNameL,"abs"))       return abs(value);
+    if (!strcmp(funcNameL,"exp"))       return exp(value);
+    if (!strcmp(funcNameL,"sign"))      return sign(value);
+    if (!strcmp(funcNameL,"sqrt"))      return sqrt(value);
+    if (!strcmp(funcNameL,"log"))       return log(value);
+    if (!strcmp(funcNameL,"log10"))     return log10(value);
+    if (!strcmp(funcNameL,"sin"))       return sin(value);
+    if (!strcmp(funcNameL,"cos"))       return cos(value);
+    if (!strcmp(funcNameL,"tan"))       return tan(value);
+    if (!strcmp(funcNameL,"asin"))      return asin(value);
+    if (!strcmp(funcNameL,"acos"))      return acos(value);
+    if (!strcmp(funcNameL,"atan"))      return atan(value);
+    if (!strcmp(funcNameL,"factorial")) return fact(value);
+
     // unknown function
     throw Error(getRow(), getCol(), 102, fn_name);
     return 0;
@@ -446,6 +631,7 @@ double Parser::evalVar(const char var_name[])
 {
     char varNameL[NAME_LEN_MAX+1];
     strtolower(varNameL, var_name);
+
     if (!strcmp(varNameL,"exit")) {exit(0); return 0;}
     if (!strcmp(varNameL,"e"))  return 2.7182818284590452353602874713527;
     if (!strcmp(varNameL,"pi")) return 3.1415926535897932384626433832795;
@@ -454,6 +640,7 @@ double Parser::evalVar(const char var_name[])
     double ans;
     if (user_var.getValue(var_name, &ans))
         return ans;
+
     throw Error(getRow(), getCol(), 103, var_name);
     return 0;
 }

@@ -1,0 +1,292 @@
+# depslib dependency file v1.0
+1429169338 source:/home/amr/MyStuff/Faculty/Programming/Interpreter/error.cpp
+	"error.h"
+
+1429169338 /home/amr/MyStuff/Faculty/Programming/Interpreter/error.h
+	<cstdio>
+	<cstdarg>
+
+1430724048 source:/home/amr/MyStuff/Faculty/Programming/Interpreter/main.cpp
+	<cstdio>
+	"parser.h"
+
+1429520230 /home/amr/MyStuff/Faculty/Programming/Interpreter/parser.h
+	<cstdlib>
+	<cctype>
+	<cmath>
+	"constants.h"
+	"error.h"
+	"myfunctions.h"
+	"variables.h"
+	"Modes.h"
+
+1429169338 /home/amr/MyStuff/Faculty/Programming/Interpreter/constants.h
+
+1429169338 /home/amr/MyStuff/Faculty/Programming/Interpreter/myfunctions.h
+	"error.h"
+	<cctype>
+
+1429169338 /home/amr/MyStuff/Faculty/Programming/Interpreter/variables.h
+	<vector>
+	<cstring>
+	"myfunctions.h"
+	"constants.h"
+
+1429169338 /home/amr/MyStuff/Faculty/Programming/Interpreter/Modes.h
+	<cstdlib>
+	<cstdio>
+	<cstring>
+	<cctype>
+	<cmath>
+	"constants.h"
+
+1429169338 source:/home/amr/MyStuff/Faculty/Programming/Interpreter/Modes.cpp
+	"Modes.h"
+
+1429169338 source:/home/amr/MyStuff/Faculty/Programming/Interpreter/myfunctions.cpp
+	"myfunctions.h"
+
+1429627158 source:/home/amr/MyStuff/Faculty/Programming/Interpreter/parser.cpp
+	"parser.h"
+
+1429169338 source:/home/amr/MyStuff/Faculty/Programming/Interpreter/variables.cpp
+	"variables.h"
+
+1429169338 source:/home/amr/Desktop/Interpreter/error.cpp
+	"error.h"
+
+1429169338 /home/amr/Desktop/Interpreter/error.h
+	<cstdio>
+	<cstdarg>
+
+1429515965 source:/home/amr/Desktop/Interpreter/main.cpp
+	<cstdlib>
+	<cstdio>
+	<iostream>
+	"parser.h"
+
+1429520230 /home/amr/Desktop/Interpreter/parser.h
+	<cstdlib>
+	<cctype>
+	<cmath>
+	"constants.h"
+	"error.h"
+	"myfunctions.h"
+	"variables.h"
+	"Modes.h"
+
+1429169338 /home/amr/Desktop/Interpreter/constants.h
+
+1429169338 /home/amr/Desktop/Interpreter/myfunctions.h
+	"error.h"
+	<cctype>
+
+1429169338 /home/amr/Desktop/Interpreter/variables.h
+	<vector>
+	<cstring>
+	"myfunctions.h"
+	"constants.h"
+
+1429169338 /home/amr/Desktop/Interpreter/Modes.h
+	<cstdlib>
+	<cstdio>
+	<cstring>
+	<cctype>
+	<cmath>
+	"constants.h"
+
+1429169338 source:/home/amr/Desktop/Interpreter/Modes.cpp
+	"Modes.h"
+
+1429169338 source:/home/amr/Desktop/Interpreter/myfunctions.cpp
+	"myfunctions.h"
+
+1429169338 source:/home/amr/Desktop/Interpreter/variables.cpp
+	"variables.h"
+
+1430085469 source:/home/amr/Desktop/Interpreter/parser.cpp
+	"parser.h"
+
+1429520230 /home/amr/Desktop/Interpreter/Include/parser.h
+	<cstdlib>
+	<cctype>
+	<cmath>
+	"constants.h"
+	"error.h"
+	"myfunctions.h"
+	"variables.h"
+	"Modes.h"
+
+1429169338 /home/amr/Desktop/Interpreter/Include/constants.h
+
+1430251290 /home/amr/Desktop/Interpreter/Include/error.h
+	<cstdio>
+	<cstdarg>
+
+1429169338 /home/amr/Desktop/Interpreter/Include/myfunctions.h
+	"error.h"
+	<cctype>
+
+1429169338 /home/amr/Desktop/Interpreter/Include/variables.h
+	<vector>
+	<cstring>
+	"myfunctions.h"
+	"constants.h"
+
+1429169338 /home/amr/Desktop/Interpreter/Include/Modes.h
+	<cstdlib>
+	<cstdio>
+	<cstring>
+	<cctype>
+	<cmath>
+	"constants.h"
+
+1429169338 source:/home/amr/Desktop/Interpreter/Src/error.cpp
+	"error.h"
+
+1429169338 source:/home/amr/Desktop/Interpreter/Src/Modes.cpp
+	"Modes.h"
+
+1429169338 source:/home/amr/Desktop/Interpreter/Src/myfunctions.cpp
+	"myfunctions.h"
+
+1429169338 source:/home/amr/Desktop/Interpreter/Src/variables.cpp
+	"variables.h"
+
+1430251163 source:/home/amr/Desktop/Interpreter/Src/parser.cpp
+	"parser.h"
+
+1429169338 source:/home/amr/MyStuff/Faculty/Programming/Interpreter/Src/error.cpp
+	"error.h"
+
+1430251290 /home/amr/MyStuff/Faculty/Programming/Interpreter/Include/error.h
+	<cstdio>
+	<cstdarg>
+
+1429169338 source:/home/amr/MyStuff/Faculty/Programming/Interpreter/Src/Modes.cpp
+	"Modes.h"
+
+1429169338 /home/amr/MyStuff/Faculty/Programming/Interpreter/Include/Modes.h
+	<cstdlib>
+	<cstdio>
+	<cstring>
+	<cctype>
+	<cmath>
+	"constants.h"
+
+1430520291 /home/amr/MyStuff/Faculty/Programming/Interpreter/Include/constants.h
+
+1429169338 source:/home/amr/MyStuff/Faculty/Programming/Interpreter/Src/myfunctions.cpp
+	"myfunctions.h"
+
+1429169338 /home/amr/MyStuff/Faculty/Programming/Interpreter/Include/myfunctions.h
+	"error.h"
+	<cctype>
+
+1429169338 source:/home/amr/MyStuff/Faculty/Programming/Interpreter/Src/variables.cpp
+	"variables.h"
+
+1429169338 /home/amr/MyStuff/Faculty/Programming/Interpreter/Include/variables.h
+	<vector>
+	<cstring>
+	"myfunctions.h"
+	"constants.h"
+
+1430518802 /home/amr/MyStuff/Faculty/Programming/Interpreter/Include/parser.h
+	<cstdlib>
+	<cctype>
+	<cmath>
+	"constants.h"
+	"error.h"
+	"myfunctions.h"
+	"variables.h"
+	"Modes.h"
+
+1430524948 source:/home/amr/MyStuff/Faculty/Programming/Interpreter/Src/parser.cpp
+	"parser.h"
+
+1430661594 source:/home/amr/MyStuff/Faculty/Programming/Interpreter/src/Function.cpp
+	"Function.h"
+
+1430661462 /home/amr/MyStuff/Faculty/Programming/Interpreter/include/Function.h
+	<vector>
+	<cstring>
+	<cctype>
+	"myfunctions.h"
+	"constants.h"
+
+1430661484 /home/amr/MyStuff/Faculty/Programming/Interpreter/include/parser.h
+	<cstdlib>
+	<cctype>
+	<cmath>
+	"constants.h"
+	"error.h"
+	"myfunctions.h"
+	"variables.h"
+	"Function.h"
+	"Modes.h"
+
+1430525674 /home/amr/MyStuff/Faculty/Programming/Interpreter/include/constants.h
+
+1430251290 /home/amr/MyStuff/Faculty/Programming/Interpreter/include/error.h
+	<cstdio>
+	<cstdarg>
+
+1429169338 /home/amr/MyStuff/Faculty/Programming/Interpreter/include/myfunctions.h
+	"error.h"
+	<cctype>
+
+1430664843 /home/amr/MyStuff/Faculty/Programming/Interpreter/include/variables.h
+	<vector>
+	<cstring>
+	<cctype>
+	"myfunctions.h"
+	"constants.h"
+	"Hash.h"
+
+1429169338 /home/amr/MyStuff/Faculty/Programming/Interpreter/include/Modes.h
+	<cstdlib>
+	<cstdio>
+	<cstring>
+	<cctype>
+	<cmath>
+	"constants.h"
+
+1430639076 source:/home/amr/MyStuff/Faculty/Programming/Interpreter/src/error.cpp
+	"error.h"
+
+1429169338 source:/home/amr/MyStuff/Faculty/Programming/Interpreter/src/Modes.cpp
+	"Modes.h"
+
+1429169338 source:/home/amr/MyStuff/Faculty/Programming/Interpreter/src/myfunctions.cpp
+	"myfunctions.h"
+
+1430730703 source:/home/amr/MyStuff/Faculty/Programming/Interpreter/src/parser.cpp
+	"parser.h"
+
+1430665014 source:/home/amr/MyStuff/Faculty/Programming/Interpreter/src/variables.cpp
+	"variables.h"
+
+1430593323 /home/amr/MyStuff/Faculty/Programming/Interpreter/include/Functions.h
+	<vector>
+	<cstring>
+	<cctype>
+	"myfunctions.h"
+	"constants.h"
+
+1430593246 source:/home/amr/MyStuff/Faculty/Programming/Interpreter/src/Functions.cpp
+	"Functions.h"
+
+1430490433 source:/home/amr/MyStuff/Faculty/Programming/Interpreter/src/Hash.cpp
+	"Hash.h"
+
+1430664978 /home/amr/MyStuff/Faculty/Programming/Interpreter/include/Hash.h
+	<iostream>
+	<cstdio>
+	<string>
+
+1430647975 source:/home/amr/MyStuff/Faculty/Programming/Interpreter/src/myparser.cpp
+	"myparser.h"
+
+1430647975 /home/amr/MyStuff/Faculty/Programming/Interpreter/include/myparser.h
+

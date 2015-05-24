@@ -1,6 +1,5 @@
-#include <cstdlib>
 #include <cstdio>
-#include <iostream>
+
 #include "parser.h"
 
 using namespace std;
@@ -9,13 +8,9 @@ int main()
 {
     char expr[255];
 
-    Parser prs; // object of class parser
-
-    //printf("Enter an expression an press Enter to calculate the result.\n");
-    //printf("Enter an empty expression to quit.\n\n");
+    Parser prs;
 
     do{
-            //cout<<"Mohamed"<<endl;
         printf(">> ");
         gets(expr);
 
@@ -30,6 +25,7 @@ int main()
             }
         }
     } while (strcmp(expr, "exit"));
+
 
     return EXIT_SUCCESS;
 }

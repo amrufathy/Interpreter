@@ -44,15 +44,19 @@ const char* Error::msgdesc(const int id)
         case 101: return "Unknown operator %s";
         case 102: return "Unknown function %s";
         case 103: return "Unknown variable %s";
+        case 104: return "Unknown variable in %s";
 
         // domain errors
         case 200: return "Too long expression, maximum number of characters exceeded";
 
         // error in assignments of variables
         case 300: return "Defining variable failed";
+        case 301: return "Defining function failed";
 
         // error in functions
         case 400: return "Integer value expected in function %s";
+
+        case 1000: return "";
     }
 
     return "Unknown error";

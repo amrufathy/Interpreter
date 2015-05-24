@@ -13,6 +13,7 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
+					<Add directory="include" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -22,6 +23,7 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
+					<Add directory="include" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -32,18 +34,22 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
-		<Unit filename="Modes.cpp" />
-		<Unit filename="Modes.h" />
-		<Unit filename="constants.h" />
-		<Unit filename="error.cpp" />
-		<Unit filename="error.h" />
+		<Unit filename="include/Function.h" />
+		<Unit filename="include/Hash.h" />
+		<Unit filename="include/Modes.h" />
+		<Unit filename="include/constants.h" />
+		<Unit filename="include/error.h" />
+		<Unit filename="include/myfunctions.h" />
+		<Unit filename="include/parser.h" />
+		<Unit filename="include/variables.h" />
 		<Unit filename="main.cpp" />
-		<Unit filename="myfunctions.cpp" />
-		<Unit filename="myfunctions.h" />
-		<Unit filename="parser.cpp" />
-		<Unit filename="parser.h" />
-		<Unit filename="variables.cpp" />
-		<Unit filename="variables.h" />
+		<Unit filename="src/Function.cpp" />
+		<Unit filename="src/Hash.cpp" />
+		<Unit filename="src/Modes.cpp" />
+		<Unit filename="src/error.cpp" />
+		<Unit filename="src/myfunctions.cpp" />
+		<Unit filename="src/parser.cpp" />
+		<Unit filename="src/variables.cpp" />
 		<Extensions>
 			<code_completion />
 			<debugger />
